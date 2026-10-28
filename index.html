@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Web Swing Phone v83</title>
+<title>Web Swing Phone v86</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@700&family=Bangers&family=Barlow+Condensed:wght@500;700&family=IBM+Plex+Mono:wght@500&display=swap">
@@ -320,6 +320,14 @@ body {
 @keyframes ring { from { transform: scale(0.3); opacity: 1; } to { transform: scale(1.6); opacity: 0; } }
 @media (max-height: 430px) { .card-ui { padding: 10px 16px 12px; gap: 8px; } .card-ui h2 { font-size: 34px; } #primary { min-height: 46px; font-size: 22px; } .card-ui .tbtn { min-height: 42px; font-size: 17px; } .hud .tbtn.ibtn { width: 44px; height: 44px; } .hud .name { font-size: 19px; } }
 @media (prefers-reduced-motion: reduce) { .card-ui, .card-ui > *, .brief .big, .stars3 .on, .stars3 .on .fg { animation-duration: 0.01s !important; } }
+/* v86: the end card: bigger stars, the counter under them, the buttons (the photo comes first, on its own) */
+.overlay.side .card-ui.endc { width: min(420px, 44%); gap: 10px; padding: 10px 18px 16px; }
+.card-ui.endc .stars3 { width: 80%; margin: 4px auto 0; }
+.card-ui.endc .stars3 .slot { width: 30%; max-width: 104px; }
+.goalm { justify-self: center; display: flex; align-items: center; gap: 8px; background: var(--deep); border: 3px solid #fff; border-radius: 999px; padding: 3px 16px 3px 4px; box-shadow: 3px 3px 0 var(--suit); }
+.goalm canvas { width: 38px; height: 38px; display: block; }
+.goalm b { font-family: var(--display); font-size: 28px; color: #fff; letter-spacing: 0.04em; }
+@media (max-height: 430px) { .card-ui.endc .stars3 .slot { max-width: 76px; } .goalm canvas { width: 30px; height: 30px; } .goalm b { font-size: 22px; } }
 </style>
 
 <style>
@@ -396,7 +404,7 @@ body {
         <canvas class="floattok" data-float="0" aria-hidden="true"></canvas><canvas class="floattok" data-float="1" aria-hidden="true"></canvas>
         <canvas class="floattok" data-float="2" aria-hidden="true"></canvas><canvas class="floattok" data-float="3" aria-hidden="true"></canvas>
         <h1 class="logo">Web<br>Swing</h1>
-        <p class="tag">Find it! &middot; prototype v83</p>
+        <p class="tag">Find it! &middot; prototype v86</p>
         <button class="go" id="btnPlay" type="button">Play</button>
         <p class="hint">Tap anywhere to start</p>
       </section>
@@ -1015,6 +1023,8 @@ body {
   // Use with liftChain(x, base + 340, ...) at the same x.
   const landing = (x, base, dir = 1, w = 420) => dir > 0 ? [x + 130 - w, 0, w, base] : [x - 130, 0, w, base];
   const LEVELS = [
+    // v84: World 1's eight Find it levels now teach Electricity (was Bugs), same ladder, modes and numbers; the bonus
+    // stops (Star Hunt, Rooftop Race, Tower Climb, Goblin Race) are unchanged. The art is drawElec (through drawBug)
     // v78: the Rooftops levels, one topic (Bugs) up proposal v1's ladder: Find, Tell apart, Count, Order. Each is a
     // generated Find it city (the Find it card in the panel) with its own layout (mapNo) and content (FIND_SETS).
     // mode: deliver (right tokens follow you in a trail to their home) or seq (in order); good, decoys and par override
@@ -1022,14 +1032,14 @@ body {
     // v80: World 1 is two levels per step: Find (3, 5), Tell apart (3, 5), Count (one kind, 5; two kinds, 3 each) and
     // Order (3, 5). Only Tell apart has decoys. Order is a timed chase: one at a time (alive: 1), see Order time per pick.
     // w1: World 1's city, nothing that moves under you or chases you (no helicopters, drones, mines, turrets or thieves)
-    { name: 'Ladybugs', dirs: 'FIND', dir: 1, gen: 'fi', find: 'ladybugs', mapNo: 1, good: 3, decoys: 0, par: 45, w1: true },
-    { name: 'Caterpillars', dirs: 'FIND', dir: 1, gen: 'fi', find: 'caterpillars', mapNo: 5, good: 5, decoys: 0, par: 60, w1: true },
-    { name: 'Spiders', dirs: 'FIND', dir: 1, gen: 'fi', find: 'spiders', mapNo: 2, good: 3, decoys: 4, par: 60, w1: true },
-    { name: 'Spots', dirs: 'FIND', dir: 1, gen: 'fi', find: 'spots', mapNo: 6, good: 5, decoys: 5, par: 75, w1: true },
-    { name: 'Bees Home', dirs: 'FIND', dir: 1, gen: 'fi', find: 'bees', mode: 'deliver', mapNo: 3, good: 5, decoys: 0, par: 90, w1: true },
-    { name: 'Garden', dirs: 'FIND', dir: 1, gen: 'fi', find: 'garden', mode: 'deliver', mapNo: 7, good: 6, decoys: 0, par: 100, w1: true },
-    { name: '1 2 3 Spots', dirs: 'FIND', dir: 1, gen: 'fi', find: 'spots123', mode: 'seq', mapNo: 8, good: 3, decoys: 0, alive: 1, w1: true },
-    { name: 'Butterfly', dirs: 'FIND', dir: 1, gen: 'fi', find: 'butterfly', mode: 'seq', mapNo: 4, good: 5, decoys: 0, alive: 1, w1: true },
+    { name: 'Light Bulbs', dirs: 'FIND', dir: 1, gen: 'fi', find: 'bulbs', mapNo: 1, good: 3, decoys: 0, par: 45, w1: true },
+    { name: 'Batteries', dirs: 'FIND', dir: 1, gen: 'fi', find: 'batteries', mapNo: 5, good: 5, decoys: 0, par: 60, w1: true },
+    { name: 'Needs Power', dirs: 'FIND', dir: 1, gen: 'fi', find: 'power', mapNo: 2, good: 3, decoys: 4, par: 60, w1: true },
+    { name: 'Lights On', dirs: 'FIND', dir: 1, gen: 'fi', find: 'lightson', mapNo: 6, good: 5, decoys: 5, par: 75, w1: true },
+    { name: 'Toy Power', dirs: 'FIND', dir: 1, gen: 'fi', find: 'toy', mode: 'deliver', mapNo: 3, good: 5, decoys: 0, par: 90, w1: true },
+    { name: 'Sun & Wind', dirs: 'FIND', dir: 1, gen: 'fi', find: 'sunwind', mode: 'deliver', mapNo: 7, good: 6, decoys: 0, par: 100, w1: true },
+    { name: 'Charge It', dirs: 'FIND', dir: 1, gen: 'fi', find: 'charge', mode: 'seq', mapNo: 8, good: 3, decoys: 0, alive: 1, w1: true },
+    { name: 'Power Trip', dirs: 'FIND', dir: 1, gen: 'fi', find: 'trip', mode: 'seq', mapNo: 4, good: 5, decoys: 0, alive: 1, w1: true },
     // v80: World 1's bonus stops: Open City, Long Run and Tower with World 1's city (w1)
     { name: 'Star Hunt', dirs: '✦', dir: 1, gen: 'op', w1: true },
     { name: 'Rooftop Race', dirs: '→', dir: 1, gen: 'rn', w1: true },
@@ -1096,14 +1106,43 @@ body {
   // v78: one topic, Bugs, up proposal v1's ladder: Find (decoys from another category), Tell apart (close decoys: 8 legs
   // or 6), Count (bring N home in a trail) and Order (a life cycle). The art is drawBug's
   const bug = (b, yes, no) => ({ kind: 'bug', bug: b, yes, no });
-  const BUG_NO = { flower: 'That’s a flower!', leaf: 'That’s a leaf!', ball: 'That’s a ball!', ant: 'An ant: 6 legs!', beetle: 'A beetle: 6 legs!', ladybug: 'That’s a ladybug!', bee: 'That’s a bee!' };
+  const BUG_NO = { book: 'That’s a book!', teddy: 'That’s a teddy!', bulbOff: 'That light is off!', flower: 'That’s a flower!', leaf: 'That’s a leaf!', ball: 'That’s a ball!', ant: 'An ant: 6 legs!', beetle: 'A beetle: 6 legs!', ladybug: 'That’s a ladybug!', bee: 'That’s a bee!' };
   const notBug = b => bug(b, '', BUG_NO[b]);
   // v82: what the level teaches, for the photos at the end (photoSet). fact: a second photo, its bugs and how they
   // relate (vs: this, not that; to: lives in; pairs: two of those); order: the caption under an Order level's photo
-  const PLURAL = { ladybug: 'ladybugs', caterpillar: 'caterpillars', spider: 'spiders', bee: 'bees', butterfly: 'butterflies', ant: 'ants', beetle: 'beetles' };
-  const HOME_SAY = { hive: 'In the beehive!', flower: 'On the flower!' };
+  const PLURAL = { bulb: 'light bulbs', battery: 'batteries', lamp: 'lamps', tv: 'TVs', fridge: 'fridges', ladybug: 'ladybugs', caterpillar: 'caterpillars', spider: 'spiders', bee: 'bees', butterfly: 'butterflies', ant: 'ants', beetle: 'beetles' };
+  const HOME_SAY = { car: 'In the toy car!', solar: 'To the solar panel!', turbine: 'To the wind turbine!', hive: 'In the beehive!', flower: 'On the flower!' };
   const LIFE = [['egg', 'Eggs!'], ['hatchling', 'Little caterpillar!'], ['caterpillar', 'Big caterpillar!'], ['chrysalis', 'Chrysalis!'], ['butterfly', 'Butterfly!']]; // v80: five steps
+  // v85: the names in the end photo's pills (a set's names override them; a battery with bars is named by its bars)
+  const ITEM_NAME = { bulb: 'Light bulb', battery: 'Battery', lamp: 'Lamp', tv: 'TV', fridge: 'Fridge', car: 'Toy car', sun: 'Sun', wind: 'Wind',
+    solar: 'Solar panel', turbine: 'Turbine', plant: 'Power station', pylon: 'Power lines', house: 'House', switch: 'Switch',
+    ladybug: 'Ladybug', caterpillar: 'Caterpillar', spider: 'Spider', bee: 'Bee', butterfly: 'Butterfly', hive: 'Hive', flower: 'Flower', egg: 'Eggs', hatchling: 'Caterpillar', chrysalis: 'Chrysalis' };
+  const ELEC_TRIP = [['plant', 'Power station!'], ['pylon', 'Power lines!'], ['house', 'A house!'], ['switch', 'Switch on!'], ['bulb', 'Light!']]; // v84: five steps
   const FIND_SETS = {
+    // v84: Electricity, World 1 (was Bugs; the Bugs sets below are kept but no level uses them). Find (bulbs,
+    // batteries: decoys from another category), Tell apart (needs power or not; on or off), Count (batteries to the
+    // toy car; sun and wind to what they power) and Order (1, 2, 3 bars; from the power station to the lamp).
+    // No sockets, plugs or cables to touch anywhere. allText: the first photo's line, when the default would be odd
+    bulbs: { take: 'Light bulbs turn electricity into light!', icon: 'bulb', short: 'LIGHT BULBS', prompt: 'Find all the light bulbs!', many: 'light bulbs', notLabel: 'Not these', goalLabel: 'Find them all',
+      make: (good, i) => good ? bug('bulb', 'Light bulb!') : notBug(['ball', 'leaf', 'book'][i % 3]) },
+    batteries: { take: 'Batteries keep electricity inside, ready to use!', icon: 'battery', short: 'BATTERIES', prompt: 'Find all the batteries!', many: 'batteries', notLabel: 'Not these', goalLabel: 'Find them all',
+      make: (good, i) => good ? bug('battery', 'Battery!') : notBug(['ball', 'leaf', 'book'][i % 3]) },
+    power: { take: 'Lamps, TVs and fridges need electricity to work!', icon: 'lamp', fact: { text: 'A lamp needs electricity. A book doesn’t!', items: ['lamp', 'book'], rel: 'vs' }, short: 'NEEDS POWER', prompt: 'Find the things that use electricity!', many: 'things that use electricity', notLabel: 'No power', goalLabel: 'Find them all',
+      make: (good, i) => good ? bug(['lamp', 'tv', 'fridge'][i % 3], ['Lamp! It uses electricity!', 'TV! It uses electricity!', 'Fridge! It uses electricity!'][i % 3]) : notBug(['book', 'teddy', 'ball'][i % 3]) },
+    lightson: { names: { bulb: 'Light on' }, take: 'Switch a light on and it glows. Switch it off and it’s dark!', icon: 'bulb', fact: { text: 'On: light! Off: dark!', items: ['bulb', 'bulbOff'], rel: 'vs' }, short: 'LIGHTS ON', prompt: 'Find the lights that are ON!', many: 'lights that are on', notLabel: 'Off', goalLabel: 'Find them all',
+      make: good => good ? bug('bulb', 'On! Light!') : bug('bulbOff', '', 'That light is off!') },
+    toy: { take: 'Batteries give toys the power to move!', icon: 'car', fact: { text: 'Batteries make toys go!', items: ['battery', 'car'], rel: 'to' }, short: 'TOY POWER', prompt: 'Bring the batteries to the toy car!', many: 'batteries', notLabel: 'Not these', done: 'Brought {n} batteries', goalLabel: 'Bring them all',
+      allText: 'You powered the toy car!',
+      homes: [{ key: 'car', item: { kind: 'bug', bug: 'car' } }],
+      make: (good, i) => good ? Object.assign(bug('battery', 'Battery!'), { home: 'car' }) : notBug(['ball', 'book'][i % 2]) },
+    sunwind: { take: 'Sunshine and wind can make electricity!', icon: 'sun', fact: { text: 'Solar panels use the sun. Wind turbines use the wind!', items: ['sun', 'solar', 'wind', 'turbine'], rel: 'pairs' }, short: 'SUN & WIND', prompt: 'Sun to the solar panel, wind to the turbine!', many: 'suns and winds', notLabel: 'Not these', done: 'Powered them all', goalLabel: 'Bring them all',
+      allText: 'You powered the solar panel and the turbine!',
+      homes: [{ key: 'solar', item: { kind: 'bug', bug: 'solar' } }, { key: 'turbine', item: { kind: 'bug', bug: 'turbine' } }],
+      make: (good, i) => good ? (i % 2 ? Object.assign(bug('wind', 'Wind!'), { home: 'turbine' }) : Object.assign(bug('sun', 'Sun!'), { home: 'solar' })) : notBug('ball') },
+    charge: { take: 'Charging fills a battery up, bar by bar!', icon: 'battery', order: '1, 2, 3 bars: full!', short: 'CHARGE IT', prompt: 'Batteries: 1, 2, 3 bars!', many: 'batteries', notLabel: 'Not these', done: 'Charged 1, 2, 3 bars', goalLabel: 'In order',
+      make: (good, i) => good ? Object.assign(bug('battery', (i + 1) + (i ? ' bars!' : ' bar!')), { spots: i + 1, n: i + 1, ord: i }) : notBug('book') },
+    trip: { names: { bulb: 'Light' }, take: 'Electricity travels along power lines to our homes!', icon: 'pylon', order: 'From the power station to your lamp!', short: 'POWER TRIP', prompt: 'From the power station to the light!', many: 'steps', notLabel: 'Not these', done: 'From the power station to the light', goalLabel: 'In order',
+      make: (good, i) => good ? Object.assign(bug(ELEC_TRIP[i][0], ELEC_TRIP[i][1]), { ord: i }) : notBug(['ball', 'book', 'teddy'][i % 3]) },
     ladybugs: { icon: 'ladybug', short: 'LADYBUGS', prompt: 'Find all the ladybugs!', many: 'ladybugs', notLabel: 'Not these', goalLabel: 'Find them all',
       make: (good, i) => good ? bug('ladybug', 'Ladybug!') : notBug(['flower', 'leaf', 'ball'][i % 3]) },
     spiders: { icon: 'spider', fact: { text: 'Spiders have 8 legs. Ants have 6!', items: ['spider', 'ant'], rel: 'vs' }, short: 'SPIDERS', prompt: 'Find the spiders: 8 legs!', many: 'spiders', notLabel: 'Not 6 legs', goalLabel: 'Find them all',
@@ -1198,6 +1237,7 @@ body {
     // legs from a body: one [x, y] start per leg on the right side, mirrored; each bends out at a knee
     const legs = (starts, out, w) => { c.lineWidth = w * a; for (const s of [-1, 1]) for (const [x, y, dy] of starts) line([[s * x, y], [s * (x + out * 0.6), y - 0.12], [s * (x + out), y + dy]]); };
     c.strokeStyle = BUG_INK; c.lineCap = 'round'; c.lineJoin = 'round'; c.lineWidth = 0.06 * a;
+    if (ELEC_ART.has(b)) return drawElec(c, b, a, spots); // v84
     if (b === 'ladybug') {
       legs([[0.4, -0.2, -0.05], [0.5, 0.08, 0.1], [0.42, 0.38, 0.22]], 0.32, 0.06);
       c.lineWidth = 0.05 * a; line([[-0.1, -0.6], [-0.28, -0.84]]); line([[0.1, -0.6], [0.28, -0.84]]);
@@ -1261,6 +1301,134 @@ body {
     } else if (b === 'ball') {
       blob(0, 0, 0.6, 0.6, '#3d7bff'); c.strokeStyle = '#ffffff'; c.lineWidth = 0.07 * a;
       c.beginPath(); c.arc(-0.9 * a, 0, 0.75 * a, -0.62, 0.62); c.stroke(); c.beginPath(); c.arc(0.9 * a, 0, 0.75 * a, Math.PI - 0.62, Math.PI + 0.62); c.stroke();
+    }
+  }
+  // v84: the Electricity art, in the Bugs art's style (flat cartoon, BUG_INK outlines), drawn round (0, 0) at a
+  // scale of a. n: a battery's bars (1 to 3, full when left out)
+  const ELEC_ART = new Set(['bulb', 'bulbOff', 'battery', 'lamp', 'tv', 'fridge', 'book', 'teddy', 'car', 'sun', 'wind', 'solar', 'turbine', 'plant', 'pylon', 'house', 'switch']);
+  function drawElec(c, b, a, n) {
+    const P = v => v * a;
+    const ell = (x, y, rx, ry, rot = 0) => { c.beginPath(); c.ellipse(P(x), P(y), P(rx), P(ry), rot, 0, Math.PI * 2); };
+    const blob = (x, y, rx, ry, fill) => { ell(x, y, rx, ry); c.fillStyle = fill; c.fill(); c.stroke(); };
+    const dot = (x, y, r, fill) => { ell(x, y, r, r); c.fillStyle = fill; c.fill(); };
+    const line = pts => { c.beginPath(); pts.forEach(([x, y], k) => k ? c.lineTo(P(x), P(y)) : c.moveTo(P(x), P(y))); c.stroke(); };
+    const poly = (pts, fill) => { c.beginPath(); pts.forEach(([x, y], k) => k ? c.lineTo(P(x), P(y)) : c.moveTo(P(x), P(y))); c.closePath(); c.fillStyle = fill; c.fill(); c.stroke(); };
+    const box = (x, y, w, h, r, fill) => { c.beginPath(); c.roundRect(P(x), P(y), P(w), P(h), P(r)); c.fillStyle = fill; c.fill(); c.stroke(); };
+    const bolt = (x, y, s, fill) => poly([[x + 0.1 * s, y - 0.5 * s], [x - 0.22 * s, y + 0.06 * s], [x - 0.01 * s, y + 0.06 * s], [x - 0.1 * s, y + 0.5 * s], [x + 0.22 * s, y - 0.08 * s], [x + 0.01 * s, y - 0.08 * s]], fill);
+    const W = 0.06;
+    c.lineWidth = P(W);
+    if (b === 'bulb' || b === 'bulbOff') {
+      const on = b === 'bulb';
+      if (on) { // the glow and its rays
+        c.save(); c.fillStyle = 'rgba(255,225,77,0.45)'; ell(0, -0.2, 0.68, 0.68); c.fill(); c.restore();
+        c.save(); c.strokeStyle = '#ffb800'; c.lineWidth = P(0.07);
+        for (let k = 0; k < 7; k++) { const t = Math.PI * (0.95 + k * 0.183); line([[Math.cos(t) * 0.62, -0.2 + Math.sin(t) * 0.62], [Math.cos(t) * 0.8, -0.2 + Math.sin(t) * 0.8]]); }
+        c.restore();
+      }
+      blob(0, -0.2, 0.42, 0.42, on ? '#ffe14d' : '#d6dbe8');
+      poly([[-0.2, 0.12], [0.2, 0.12], [0.16, 0.32], [-0.16, 0.32]], on ? '#ffe14d' : '#d6dbe8');
+      c.save(); c.strokeStyle = on ? '#ff8a00' : '#8a90a8'; c.lineWidth = P(0.05); line([[-0.1, 0.2], [-0.1, -0.12], [-0.03, -0.24], [0.03, -0.12], [0.1, -0.24], [0.1, 0.2]]); c.restore();
+      box(-0.19, 0.32, 0.38, 0.3, 0.05, '#9aa3bd');
+      c.save(); c.lineWidth = P(0.04); line([[-0.19, 0.42], [0.19, 0.42]]); line([[-0.19, 0.52], [0.19, 0.52]]); c.restore();
+      if (on) dot(-0.18, -0.36, 0.08, 'rgba(255,255,255,0.85)');
+    } else if (b === 'battery') {
+      const bars = n || 3, col = bars === 1 ? '#ff4a4a' : bars === 2 ? '#ffc21a' : '#3fcf5a';
+      box(-0.12, -0.72, 0.24, 0.12, 0.03, '#9aa3bd');
+      box(-0.34, -0.62, 0.68, 1.32, 0.12, '#2b2f66');
+      for (let k = 0; k < 3; k++) { c.save(); c.lineWidth = P(0.04); box(-0.22, 0.38 - k * 0.38, 0.44, 0.28, 0.05, k < bars ? col : '#454a85'); c.restore(); }
+    } else if (b === 'lamp') {
+      c.save(); c.strokeStyle = 'rgba(0,0,0,0)'; poly([[-0.24, -0.05], [0.24, -0.05], [0.46, 0.38], [-0.46, 0.38]], 'rgba(255,225,77,0.55)'); c.restore(); // the light, no outline
+      c.save(); c.lineWidth = P(0.08); line([[0, -0.05], [0, 0.6]]); c.restore();
+      blob(0, 0.64, 0.36, 0.1, '#5b6bd6');
+      poly([[-0.2, -0.62], [0.2, -0.62], [0.42, -0.05], [-0.42, -0.05]], '#ff9f43');
+    } else if (b === 'tv') {
+      c.save(); c.lineWidth = P(0.05); line([[-0.06, -0.42], [-0.3, -0.74]]); line([[0.06, -0.42], [0.3, -0.74]]); c.restore();
+      dot(-0.3, -0.74, 0.06, BUG_INK); dot(0.3, -0.74, 0.06, BUG_INK);
+      box(-0.7, -0.44, 1.4, 1.0, 0.14, '#2b2f66');
+      box(-0.58, -0.33, 1.16, 0.78, 0.08, '#4fa3ff');
+      dot(-0.32, -0.12, 0.08, 'rgba(255,255,255,0.7)');
+      c.save(); c.lineWidth = P(0.07); line([[-0.36, 0.56], [-0.48, 0.72]]); line([[0.36, 0.56], [0.48, 0.72]]); c.restore();
+    } else if (b === 'fridge') {
+      box(-0.42, -0.76, 0.84, 1.5, 0.14, '#eef4ff');
+      line([[-0.42, -0.2], [0.42, -0.2]]);
+      c.save(); c.lineWidth = P(0.08); line([[0.26, -0.58], [0.26, -0.36]]); line([[0.26, -0.04], [0.26, 0.3]]); c.restore();
+      dot(-0.2, -0.5, 0.06, '#ff6f91'); dot(-0.06, -0.46, 0.05, '#3fcf5a');
+    } else if (b === 'book') {
+      box(-0.42, -0.56, 0.84, 1.12, 0.06, '#ffffff');
+      box(-0.5, -0.62, 0.84, 1.12, 0.08, '#e3263b');
+      box(-0.34, -0.42, 0.52, 0.22, 0.04, '#ffd23f');
+      c.save(); c.lineWidth = P(0.05); line([[-0.38, -0.6], [-0.38, 0.48]]); c.restore();
+    } else if (b === 'teddy') {
+      blob(-0.42, -0.42, 0.18, 0.18, '#b8763e'); blob(0.42, -0.42, 0.18, 0.18, '#b8763e');
+      dot(-0.42, -0.42, 0.09, '#f2c79a'); dot(0.42, -0.42, 0.09, '#f2c79a');
+      blob(0, 0.02, 0.58, 0.54, '#b8763e');
+      blob(0, 0.2, 0.26, 0.2, '#f2c79a');
+      dot(-0.2, -0.1, 0.07, BUG_INK); dot(0.2, -0.1, 0.07, BUG_INK); dot(0, 0.12, 0.08, BUG_INK);
+      c.save(); c.lineWidth = P(0.04); line([[0, 0.18], [0, 0.26]]); c.beginPath(); c.arc(P(-0.07), P(0.26), P(0.07), 0, Math.PI); c.arc(P(0.07), P(0.26), P(0.07), 0, Math.PI); c.stroke(); c.restore();
+    } else if (b === 'car') {
+      poly([[-0.34, -0.12], [-0.18, -0.46], [0.24, -0.46], [0.42, -0.12]], '#7fd3ff');
+      box(-0.74, -0.14, 1.48, 0.46, 0.16, '#e3263b');
+      c.save(); c.lineWidth = P(0.04); line([[0.03, -0.44], [0.03, -0.14]]); c.restore();
+      dot(0.6, 0.02, 0.07, '#ffe14d');
+      for (const x of [-0.42, 0.42]) { blob(x, 0.36, 0.2, 0.2, '#2b2f66'); dot(x, 0.36, 0.08, '#cfd6ea'); }
+      bolt(-0.4, 0.06, 0.34, '#ffd23f');
+    } else if (b === 'sun') {
+      c.save(); c.strokeStyle = '#ff9f1a'; c.lineWidth = P(0.09);
+      for (let k = 0; k < 8; k++) { const t = k * Math.PI / 4; line([[Math.cos(t) * 0.56, Math.sin(t) * 0.56], [Math.cos(t) * 0.78, Math.sin(t) * 0.78]]); }
+      c.restore();
+      blob(0, 0, 0.44, 0.44, '#ffd23f');
+      dot(-0.15, -0.08, 0.06, BUG_INK); dot(0.15, -0.08, 0.06, BUG_INK);
+      c.save(); c.lineWidth = P(0.05); c.beginPath(); c.arc(0, P(0.06), P(0.16), 0.2, Math.PI - 0.2); c.stroke(); c.restore();
+    } else if (b === 'wind') {
+      c.save(); c.lineWidth = P(0.11); c.strokeStyle = '#2f6fd6';
+      const gust = (y, len, curl) => { c.beginPath(); c.moveTo(P(-0.7), P(y)); c.lineTo(P(len - 0.2), P(y)); c.arc(P(len - 0.2), P(y - curl), P(curl), Math.PI / 2, -Math.PI * 0.9, true); c.stroke(); };
+      gust(-0.28, 0.6, 0.16); gust(0.06, 0.82, 0.14); gust(0.4, 0.4, 0.13);
+      c.restore();
+    } else if (b === 'solar') {
+      c.save(); c.lineWidth = P(0.08); line([[0, 0.2], [0, 0.66]]); c.restore();
+      blob(0, 0.68, 0.3, 0.08, '#9aa3bd');
+      poly([[-0.56, -0.5], [0.48, -0.5], [0.68, 0.24], [-0.36, 0.24]], '#2f6fd6');
+      c.save(); c.strokeStyle = '#bfe2ff'; c.lineWidth = P(0.035);
+      for (const t of [1 / 3, 2 / 3]) { line([[-0.56 + 1.04 * t, -0.5], [-0.36 + 1.04 * t, 0.24]]); }
+      line([[-0.46, -0.13], [0.58, -0.13]]);
+      c.restore();
+    } else if (b === 'turbine') {
+      poly([[-0.07, -0.3], [0.07, -0.3], [0.13, 0.74], [-0.13, 0.74]], '#eef4ff');
+      for (let k = 0; k < 3; k++) {
+        c.save(); c.translate(0, P(-0.3)); c.rotate(-Math.PI / 2 + k * Math.PI * 2 / 3 + 0.3);
+        poly([[0.06, -0.06], [0.62, -0.03], [0.66, 0.03], [0.06, 0.09]], '#ffffff');
+        c.restore();
+      }
+      blob(0, -0.3, 0.1, 0.1, '#5b6bd6');
+    } else if (b === 'plant') {
+      box(0.06, -0.72, 0.18, 0.5, 0.03, '#9aa3bd'); box(0.34, -0.6, 0.18, 0.38, 0.03, '#9aa3bd');
+      c.save(); c.fillStyle = 'rgba(255,255,255,0.9)'; c.strokeStyle = 'transparent'; ell(0.18, -0.82, 0.12, 0.08); c.fill(); ell(0.46, -0.7, 0.1, 0.07); c.fill(); c.restore();
+      poly([[-0.72, -0.08], [-0.72, 0.62], [0.72, 0.62], [0.72, -0.22], [0.36, -0.08], [0.36, -0.22], [0, -0.08], [0, -0.22], [-0.36, -0.08]], '#5b6bd6');
+      bolt(-0.34, 0.28, 0.5, '#ffd23f');
+      box(0.2, 0.18, 0.3, 0.44, 0.04, '#2b2f66');
+    } else if (b === 'pylon') {
+      c.save(); c.strokeStyle = '#2b2f66'; c.lineWidth = P(0.07);
+      line([[-0.4, 0.76], [-0.08, -0.72], [0.08, -0.72], [0.4, 0.76]]);
+      line([[-0.3, 0.3], [0.2, -0.2]]); line([[0.3, 0.3], [-0.2, -0.2]]); line([[-0.3, 0.3], [0.3, 0.3]]);
+      line([[-0.2, -0.2], [0.2, -0.2]]); line([[-0.13, -0.5], [0.13, -0.5]]);
+      c.lineWidth = P(0.08); line([[-0.62, -0.5], [0.62, -0.5]]); line([[-0.5, -0.2], [0.5, -0.2]]);
+      c.restore();
+      c.save(); c.strokeStyle = '#ffb800'; c.lineWidth = P(0.04);
+      c.beginPath(); c.moveTo(P(-0.62), P(-0.46)); c.quadraticCurveTo(P(-0.8), P(-0.3), P(-0.84), P(-0.1)); c.stroke();
+      c.beginPath(); c.moveTo(P(0.62), P(-0.46)); c.quadraticCurveTo(P(0.8), P(-0.3), P(0.84), P(-0.1)); c.stroke();
+      c.restore();
+    } else if (b === 'house') {
+      box(-0.54, -0.12, 1.08, 0.8, 0.04, '#fff1d6');
+      poly([[-0.7, -0.08], [0, -0.7], [0.7, -0.08]], '#e3263b');
+      box(-0.38, 0.04, 0.3, 0.28, 0.04, '#ffe14d');
+      c.save(); c.lineWidth = P(0.035); line([[-0.23, 0.04], [-0.23, 0.32]]); line([[-0.38, 0.18], [-0.08, 0.18]]); c.restore();
+      box(0.12, 0.18, 0.26, 0.5, 0.04, '#5b6bd6');
+      dot(0.32, 0.44, 0.03, '#ffd23f');
+    } else if (b === 'switch') {
+      box(-0.46, -0.62, 0.92, 1.24, 0.16, '#ffffff');
+      box(-0.2, -0.38, 0.4, 0.76, 0.08, '#eef0f8');
+      box(-0.2, -0.38, 0.4, 0.4, 0.08, '#3fcf5a');
+      dot(-0.32, -0.5, 0.03, '#9aa3bd'); dot(0.32, 0.5, 0.03, '#9aa3bd');
     }
   }
   // a token drawn on a small canvas of the page (the prompt card)
@@ -1589,7 +1757,18 @@ body {
   // a key (level_<set>, item_<bug>, home_<home>, photo_<set>_<n>) to a sound's URL, and the text is the script line
   const VO = {};
   let voLast = '';
-  function vo(key, text) { voLast = key + ': ' + text; const u = VO[key]; if (u) try { new Audio(u).play().catch(() => {}); } catch (e) {} }
+  // v85: recordings can also come from window.SPIDEY_VO (a script at the end of the file, key -> data URL). voSeq plays
+  // lines one after another (the end card: "Well done!", then how many you found)
+  const voUrl = key => VO[key] || (window.SPIDEY_VO || {})[key];
+  function vo(key, text) { voLast = key + ': ' + text; const u = voUrl(key); if (u) try { new Audio(u).play().catch(() => {}); } catch (e) {} }
+  function voSeq(lines) {
+    let i = 0;
+    const next = () => { if (i >= lines.length) return; const [key, text] = lines[i++]; voLast = key + ': ' + text; const u = voUrl(key);
+      if (!u) return next(); try { const a = new Audio(u); a.onended = next; a.play().catch(next); } catch (e) { next(); } };
+    next();
+  }
+  // v85: an item's line has its own key per level (item_<set>_<art><bars>), since the same art says different things
+  const itemVoKey = it => 'item_' + lv.L.find + '_' + it.bug + (it.spots || '');
   // ================= game state =================
   const LM_CROWN = 210, LM_NEEDLE = 170; // davidVersion: the landmark's crown (three 70 px tiers) and needle, px
   const EDGE_RUN = 2500; // with open sides, how far the city carries on past each end of a level
@@ -1672,7 +1851,7 @@ body {
   let pills = [];
   const PILL_T = 1.8; // s on screen
   function learnPop(x, y, it, txt) {
-    pills.push({ x, y, t: 0, it, txt: (txt || '').replace(/!+$/, '') });
+    // v85: no name pill any more while you collect: the voice says it (the ring, burst and counter bounce stay)
     burst(x, y, 10, '#ffffff'); booms.push({ x, y, t: 0, size: 0.35, ring: true });
     const el = $('levelname'); el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
   }
@@ -2418,7 +2597,7 @@ body {
           t.got = true; took = true;
           if (t.good) {
             burst(t.x, t.y, 18, '#ffd23f'); burst(t.x, t.y, 8, '#ffffff'); lv.lastFind = runTime; lv.senseNext = 0; if (lv.sense && lv.sense.target === t) lv.sense = null;
-            learnPop(t.x, t.y, t.item, t.item.yes); vo('item_' + t.item.bug, t.item.yes); // v82: the name in a pill, a ring, the counter bounces
+            learnPop(t.x, t.y, t.item, t.item.yes); vo(itemVoKey(t.item), t.item.yes); // v82: the name in a pill, a ring, the counter bounces
             if (lv.mode === 'deliver') lv.carry.push(t); else t.done = true;
             if (lv.mode === 'seq') { if (runTime - lv.seqBorn > T.fiOrderT) lv.late++; lv.seqNext++; } // v80: late, past its clock
           } else {
@@ -4394,7 +4573,7 @@ body {
     booms = booms.filter(b => b.t < 0.9);
     shake = Math.max(0, shake - rdt);
     if (state === 'dying') { dyingT -= rdt; if (dyingT <= 0) { state = 'over'; showCard(deathKind); } }
-    if (outro) { outro.t += rdt; if (state === 'outro' && outro.t >= OUTRO_IN) { state = 'clear'; if (lv.finds) showPhotos(); else showCard('clear'); } } // v81 (v82: the photos first)
+    if (outro) { outro.t += rdt; if (state === 'outro' && outro.t >= OUTRO_IN) { state = 'clear'; if (lv.finds) showPhotos(); else showCard('clear'); } } // v81 (v82: the photos first; v86: one photo, then the card)
     if (lv && lv.goblin && state === 'play') raceHud(); // v83
     if (focus) { focus.t += rdt; if (focus.rel) { focus.out += rdt; if (focus.out >= FOCUS_OUT) focus = null; } } // v82
     if (lv && lv.pose) lv.pose.t += rdt; // v82
@@ -4428,10 +4607,10 @@ body {
     { id: 'roof', name: 'Rooftops', nodes: [
       // v80: World 1, Bugs: Find 3, Find 5, bonus, Tell apart 3, Tell apart 5, bonus, Count (one kind, 5), Count (two
       // kinds, 3 each), bonus, Order 3, Order 5, then the boss (locked)
-      { lv: 'Ladybugs' }, { lv: 'Caterpillars' }, { lv: 'Star Hunt', bonus: 'Collect' },
-      { lv: 'Spiders' }, { lv: 'Spots' }, { lv: 'Rooftop Race', bonus: 'Race' },
-      { lv: 'Bees Home' }, { lv: 'Garden' }, { lv: 'Tower Climb', bonus: 'Climb' },
-      { lv: '1 2 3 Spots' }, { lv: 'Butterfly' }, { lv: 'Goblin Race', boss: true } ] }, // v83: the boss is open
+      { lv: 'Light Bulbs' }, { lv: 'Batteries' }, { lv: 'Star Hunt', bonus: 'Collect' },
+      { lv: 'Needs Power' }, { lv: 'Lights On' }, { lv: 'Rooftop Race', bonus: 'Race' },
+      { lv: 'Toy Power' }, { lv: 'Sun & Wind' }, { lv: 'Tower Climb', bonus: 'Climb' },
+      { lv: 'Charge It' }, { lv: 'Power Trip' }, { lv: 'Goblin Race', boss: true } ] }, // v83: the boss is open
     { id: 'yard', name: 'Construction Yard', need: 16 }, // v80: of World 1's 24 stars
     { id: 'down', name: 'Downtown Towers', need: 24 },
   ];
@@ -4574,7 +4753,7 @@ body {
   // ---- the title screen ----
   let splashBuilt = ''; // v74: what it was built with ('spidey' or 'stick'), so it is built again once the sheet is in
   function buildSplash() {
-    const tokens = ['ladybug', 'spider', 'bee', 'butterfly'].map(b => ({ kind: 'bug', bug: b })); // v78: Bugs
+    const tokens = ['bulb', 'battery', 'sun', 'turbine'].map(b => ({ kind: 'bug', bug: b })); // v84: Electricity (v78: Bugs)
     const paintAll = () => document.querySelectorAll('[data-float]').forEach(c => paintToken(c, tokens[+c.dataset.float]));
     const art = (menuSheet() ? 'spidey' : 'stick') + (citySvg() ? '+city' : ''); // v77: and the library city once it's in
     if (splashBuilt !== art) {
@@ -4901,9 +5080,10 @@ body {
       // v71: Find it results: the three stars and what each one was for
       const st = lv.stars, n = lv.finds.filter(t => t.good).length, t = findTime(), nx = nextNodeLevel();
       // v81: three star slots, filled one by one (starShow), each with its line under it; the buttons come last
-      html = `<h2>Well done!</h2>
-        <div class="stars3" role="img" aria-label="${st.filter(Boolean).length} of 3 stars">${st.map(() => `<span class="slot"><svg viewBox="-50 -50 100 100"><path class="bg" d="${star(0, 4, 44)}"/><path class="fg" d="${star(0, 4, 44)}"/></svg></span>`).join('')}</div>
-
+      // v86: the stars, how many you found under them, the buttons. No title: the voice says it (the photo came first)
+      const got = lv.finds.filter(q => q.good && q.done).length;
+      html = `<div class="stars3" role="img" aria-label="${st.filter(Boolean).length} of 3 stars">${st.map(() => `<span class="slot"><svg viewBox="-50 -50 100 100"><path class="bg" d="${star(0, 4, 44)}"/><path class="fg" d="${star(0, 4, 44)}"/></svg></span>`).join('')}</div>
+        <span class="goalm" aria-label="${got} of ${n} found"><canvas aria-hidden="true"></canvas><b>${got}/${n}</b></span>
         <div class="actions wait"><button id="primary" type="button">${nx ? 'Next' : 'Again'}</button>${iconBtns(!!nx)}</div>`; // v82: no numbers or result lines
     } else {
       const nx = nextNodeLevel();
@@ -4911,11 +5091,17 @@ body {
         <div class="actions"><button id="primary" type="button">${nx ? 'Next' : 'Again'}</button>${iconBtns(!!nx)}</div>`; // v82
     }
     cardui.innerHTML = html; overlay.hidden = false;
+    cardui.classList.toggle('endc', kind === 'clear' && fi); // v85
     overlay.classList.toggle('side', (kind === 'clear' && !!outro) || kind === 'brief'); // v81: beside the hero after the cinematic (v82: and the objective)
     cardui.style.animation = 'none'; void cardui.offsetWidth; cardui.style.animation = ''; // v81: slam in again each time
     cardui.scrollTop = 0;
     showCardSpidey((kind === 'clear' && outro) || kind === 'brief' ? null : kind); // v74 (v81, v82: the hero in the scene is enough)
-    if (kind === 'clear' && fi) starShow(); // v81
+    if (kind === 'clear' && fi) { // v81 (v85: the voice; v86: the counter's picture)
+      const got = lv.finds.filter(q => q.good && q.done).length, all = got === lv.finds.filter(q => q.good).length;
+      paintToken(cardui.querySelector('.goalm canvas'), { kind: 'bug', bug: lv.set.icon }); // v86
+      voSeq([['end_welldone', 'Well done!'], all ? ['end_foundall', 'You found all the items!'] : ['end_found', 'You found the items.']]);
+      starShow();
+    }
     // v71: the tokens on the prompt card, painted again once the letter font has loaded
     const doPaint = () => cardui.querySelectorAll('canvas[data-tok]').forEach(c => { const it = paint[+c.dataset.tok]; if (it) paintToken(c, it); });
     if (paint.length) { doPaint(); try { document.fonts && document.fonts.load('700 40px Andika').then(doPaint, () => {}); } catch (e) {} }
@@ -4952,15 +5138,62 @@ body {
   // last come the stars. photoSet: the done photo (all found, brought home, or the order), then the set's fact
   const photosEl = $('photos');
   function photoSet() {
+    if (lv.set.take) return [{ end: true, text: lv.set.take }]; // v86: one photo, in the level's city, with the takeaway
     const set = lv.set, good = lv.finds.filter(t => t.good).map(t => t.item), out = [];
     if (lv.mode === 'seq') out.push({ items: good.slice().sort((a, b) => a.ord - b.ord), rel: 'order', text: set.order || set.prompt });
     else {
       const counts = {}; for (const it of good) counts[it.bug] = (counts[it.bug] || 0) + 1;
       const what = Object.entries(counts).map(([b, n]) => n + ' ' + (n > 1 ? PLURAL[b] || b + 's' : b)).join(' and ');
-      out.push({ items: good, rel: 'all', text: lv.mode === 'deliver' ? 'You brought ' + what + ' home!' : 'You found all the ' + set.many + '!' });
+      out.push({ items: good, rel: 'all', text: set.allText || (lv.mode === 'deliver' ? 'You brought ' + what + ' home!' : 'You found all the ' + set.many + '!') }); // v84: allText
     }
     if (set.fact) out.push({ items: set.fact.items.map(b => ({ kind: 'bug', bug: b })), rel: set.fact.rel, text: set.fact.text });
     return out;
+  }
+  // v85: what the end photo shows: every kind you found once (by art and bars), in the level's order (Order), or each
+  // kind followed by its home (Count); arrow: an arrow between this one and the next
+  function endItems() {
+    const set = lv.set, seen = new Set(), out = [];
+    let good = lv.finds.filter(t => t.good && t.done).map(t => t.item);
+    if (lv.mode === 'seq') good = good.slice().sort((a, b) => a.ord - b.ord);
+    const name = it => (set.names && set.names[it.bug]) || (it.spots && it.bug === 'battery' ? it.spots + (it.spots > 1 ? ' bars' : ' bar') : ITEM_NAME[it.bug] || it.bug);
+    const add = (it, arrow) => { const k = it.bug + '|' + (it.spots || ''); if (seen.has(k)) return; seen.add(k); out.push({ it, name: name(it), arrow }); };
+    if (lv.homes) {
+      const keys = [...new Set(lv.homes.map(h => h.key))];
+      for (const key of keys) { const home = lv.homes.find(h => h.key === key);
+        good.filter(it => it.home === key).forEach(it => add(it, ''));
+        if (out.length) out[out.length - 1].arrow = '→'; add(home.item, ''); }
+    } else good.forEach(it => add(it, lv.mode === 'seq' ? '›' : ''));
+    if (out.length) out[out.length - 1].arrow = '';
+    return out;
+  }
+  // v85: the end photo: the level's own night city (the Spider-Man skyline when it's loaded, a drawn one otherwise), a
+  // girder, and the items with their names in pills
+  function paintEndPhoto(cvs, list) {
+    if (!cvs) return;
+    const w = 720, h = 480, c = cvs.getContext('2d'); cvs.width = w; cvs.height = h; // v86: 3:2, the photos' shape
+    c.fillStyle = '#1b1f5e'; c.fillRect(0, 0, w, h);
+    if (cityReady()) { const sh = h * 1.15, sw = cityBg.naturalWidth * sh / cityBg.naturalHeight, off = ((lvIndex * 0.37) % 1) * Math.max(0, sw - w);
+      c.drawImage(cityBg, -off, h - sh, sw, sh); c.fillStyle = 'rgba(9,11,31,0.28)'; c.fillRect(0, 0, w, h); }
+    else { const r = rng(40 + lvIndex);
+      c.fillStyle = '#f3f0d0'; c.beginPath(); c.arc(640, 56, 24, 0, Math.PI * 2); c.fill();
+      for (const [col, base, hi] of [['#252a6e', 150, 90], ['#2f3584', 190, 70]]) { let x = -10;
+        while (x < w) { const bw = 50 + r() * 60, bh = base * (0.5 + r() * 0.5) + hi; c.fillStyle = col; c.fillRect(x, h - bh, bw, bh);
+          c.fillStyle = 'rgba(245,215,110,0.5)'; for (let yy = h - bh + 14; yy < h - 10; yy += 26) for (let xx = x + 8; xx < x + bw - 12; xx += 18) if (r() < 0.45) c.fillRect(xx, yy, 8, 12);
+          x += bw + 8; } } }
+    c.fillStyle = '#8ea0d8'; c.fillRect(0, h - 56, w, 8); c.strokeStyle = '#8ea0d8'; c.lineWidth = 3;
+    for (let x = 0; x < w; x += 44) { c.beginPath(); c.moveTo(x, h - 48); c.lineTo(x + 22, h); c.lineTo(x + 44, h - 48); c.stroke(); }
+    const n = list.length, rad = n === 1 ? 104 : n <= 3 ? 74 : n === 4 ? 62 : 52, gap = w / (n + 1), ty = n === 1 ? 190 : 200, fs = n <= 3 ? 32 : n === 4 ? 28 : 24;
+    list.forEach((q, i) => {
+      const x = gap * (i + 1);
+      c.save(); c.translate(x, ty); drawToken(c, q.it, rad); c.restore();
+      c.save(); let f = fs; const font = () => { c.font = '700 ' + f + 'px Andika, "Trebuchet MS", sans-serif'; }; font();
+      while (f > 14 && c.measureText(q.name).width + 22 > gap - 8) { f--; font(); } // v85: the name fits its slot
+      const pw = c.measureText(q.name).width + 22, py = ty + rad + 34;
+      c.fillStyle = '#ffffff'; c.strokeStyle = '#0b0d24'; c.lineWidth = 4; c.beginPath(); c.roundRect(x - pw / 2, py - f * 0.72, pw, f * 1.44, f * 0.72); c.fill(); c.stroke();
+      c.fillStyle = '#14173a'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(q.name, x, py + 1); c.restore();
+      if (q.arrow) { c.save(); c.font = '700 ' + (q.arrow === '→' ? 44 : 40) + 'px Andika, "Trebuchet MS", sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
+        c.lineWidth = 8; c.strokeStyle = '#0b0d24'; c.fillStyle = '#ffffff'; c.strokeText(q.arrow, x + gap / 2, ty); c.fillText(q.arrow, x + gap / 2, ty); c.restore(); }
+    });
   }
   // a photo's picture: a sunny rooftop, and its bugs laid out by how they relate
   function paintPhoto(cvs, ph) {
@@ -4989,8 +5222,9 @@ body {
     photosEl.innerHTML = list.map((ph, k) => `<figure class="photo" style="--rot:${[-4, 3, -2][k % 3]}deg; z-index:${10 - k}"><canvas aria-hidden="true"></canvas><figcaption>${ph.text}</figcaption></figure>`).join('')
       + `<i class="flash"></i><p class="swipehint" aria-hidden="true">${ICON_TAP}</p>`;
     const els = [...photosEl.querySelectorAll('.photo')];
-    els.forEach((el, k) => paintPhoto(el.querySelector('canvas'), list[k]));
-    try { document.fonts && document.fonts.load('700 40px Andika').then(() => els.forEach((el, k) => el.isConnected && paintPhoto(el.querySelector('canvas'), list[k])), () => {}); } catch (e) {}
+    const paintOne = (el, k) => list[k].end ? paintEndPhoto(el.querySelector('canvas'), endItems()) : paintPhoto(el.querySelector('canvas'), list[k]); // v86
+    els.forEach(paintOne);
+    try { document.fonts && document.fonts.load('700 40px Andika').then(() => els.forEach((el, k) => el.isConnected && paintOne(el, k)), () => {}); } catch (e) {}
     photosEl.hidden = false;
     let k = 0;
     const flash = () => { const f = photosEl.querySelector('.flash'); f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); };
